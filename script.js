@@ -2,6 +2,9 @@ const display = document.querySelector(".calculator-input");
 const keys = document.querySelector(".calculator-keys");
 
 let displayValue = "0";
+let firstValue = null;
+let operator = null;
+let waitingForSecondValue = false;
 
 updateDisplay();
 
@@ -15,7 +18,8 @@ keys.addEventListener("click", function (e) {
   if (!element.matches("button")) return;
 
   if (element.classList.contains("operator")) {
-    console.log("operator", element.value);
+    // console.log("operator", element.value);
+    handleOperator(element.value);
     return;
   }
 
@@ -38,8 +42,24 @@ keys.addEventListener("click", function (e) {
   updateDisplay();
 });
 
+function handleOperator(nextOperator) {
+  const value = parseFloat(displayValue);
+
+  if (firstValue === null) {
+    firstValue = value;
+  }
+
+  waitingForSecondValue = true;
+  operator = nextOperator;
+}
+
 function inputNumber(num) {
-  displayValue = display.value === "0" ? num : displayValue + num;
+  if (waitingForSecondValue) {
+    displayValue = num;
+    waitingForSecondValue = false;
+  } else {
+    displayValue = display.value === "0" ? num : displayValue + num;
+  }
 }
 
 function inputDecimal() {
