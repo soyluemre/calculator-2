@@ -20,6 +20,7 @@ keys.addEventListener("click", function (e) {
   if (element.classList.contains("operator")) {
     // console.log("operator", element.value);
     handleOperator(element.value);
+    updateDisplay();
     return;
   }
 
@@ -45,12 +46,36 @@ keys.addEventListener("click", function (e) {
 function handleOperator(nextOperator) {
   const value = parseFloat(displayValue);
 
+  if (operator && waitingForSecondValue) {
+    operator = nextOperator;
+    return;
+  }
+
   if (firstValue === null) {
     firstValue = value;
+  } else if (operator) {
+    const result = calculate(firstValue, value, operator);
+
+    displayValue = `${parseFloat(result.toFixed(7))}`;
+    firstValue = result;
   }
 
   waitingForSecondValue = true;
   operator = nextOperator;
+}
+
+function calculate(first, second, operator) {
+  if (operator === "+") {
+    return first + second;
+  } else if (operator === "-") {
+    return first - second;
+  } else if (operator === "*") {
+    return first * second;
+  } else if (operator === "/") {
+    return first / second;
+  }
+
+  return second;
 }
 
 function inputNumber(num) {
